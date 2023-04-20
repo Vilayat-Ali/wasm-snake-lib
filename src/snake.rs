@@ -17,7 +17,6 @@ impl Display for Coord {
     }
 }
 
-#[wasm_bindgen]
 impl Coord {
     pub fn new(x: u64, y: u64) -> Self {
         Self { x, y }
@@ -35,13 +34,11 @@ impl Coord {
 pub type SnakeBodyNode = Option<Box<Node>>;
 
 #[derive(Clone)]
-#[wasm_bindgen]
 pub struct Node {
     data: Coord,
     next: SnakeBodyNode,
 }
 
-#[wasm_bindgen]
 impl Node {
     pub fn new(data: Coord, next: SnakeBodyNode) -> Self {
         Self { data, next }
@@ -70,7 +67,6 @@ pub struct Snake {
     field_size: (u64, u64),
 }
 
-#[wasm_bindgen]
 impl Snake {
     pub fn spawn(field_size: (u64, u64)) -> Self {
         Self {
