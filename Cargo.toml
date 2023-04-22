@@ -1,7 +1,10 @@
 [package]
 name = "wasm-snake"
 version = "0.1.0"
+description = ""
 authors = ["vilayat-ali <vilayatcodemysite@gmail.com>"]
+repository = "https://www.github.com/Vilayat-Ali/wasm-snake-lib"
+license = "MIT"
 edition = "2018"
 
 [lib]

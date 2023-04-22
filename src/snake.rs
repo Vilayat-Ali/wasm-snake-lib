@@ -6,6 +6,20 @@ use wasm_bindgen::{convert::FromWasmAbi, prelude::wasm_bindgen};
 
 #[derive(Clone)]
 #[wasm_bindgen]
+pub struct FieldSize {
+    rows: u64,
+    cols: u64,
+}
+
+#[wasm_bindgen]
+impl FieldSize {
+    pub fn new(rows: u64, cols: u64) -> Self {
+        Self { rows, cols }
+    }
+}
+
+#[derive(Clone)]
+#[wasm_bindgen]
 pub struct Coord {
     x: u64,
     y: u64,
@@ -17,16 +31,17 @@ impl Display for Coord {
     }
 }
 
+#[wasm_bindgen]
 impl Coord {
     pub fn new(x: u64, y: u64) -> Self {
         Self { x, y }
     }
 
-    pub fn centered(field_size: (u64, u64)) -> Self {
+    pub fn centered(field_size: FieldSize) -> Self {
         // field_size = tuple(no_of_rows, no_of_columns)
         Self {
-            x: f32::ceil((field_size.1 as f32) / 2_f32) as u64,
-            y: f32::ceil((field_size.0 as f32) / 2_f32) as u64,
+            x: f32::ceil((field_size.cols as f32) / 2_f32) as u64,
+            y: f32::ceil((field_size.rows as f32) / 2_f32) as u64,
         }
     }
 }
@@ -59,18 +74,23 @@ pub enum Direction {
 }
 
 #[derive(Clone)]
+#[wasm_bindgen]
 pub struct Snake {
     head: SnakeBodyNode,
     size: u32,
     direction: Direction,
     speed: u32,
-    field_size: (u64, u64),
+    field_size: FieldSize,
 }
 
+#[wasm_bindgen]
 impl Snake {
-    pub fn spawn(field_size: (u64, u64)) -> Self {
+    pub fn spawn(field_size: FieldSize) -> Self {
         Self {
-            head: Some(Box::new(Node::new(Coord::centered(field_size), None))),
+            head: Some(Box::new(Node::new(
+                Coord::centered(field_size.clone()),
+                None,
+            ))),
             size: 1,
             direction: Direction::UP,
             speed: 12,
@@ -128,24 +148,23 @@ impl Snake {
         }
     }
 
-    pub fn move_snake(&mut self, direction: Direction) -> Result<(), ()> {
+    pub fn move_snake(&mut self, direction: Direction) -> bool {
         let mut next_head_coord: Coord = self.next_head_coord();
 
         if next_head_coord.x < u64::MIN
-            || next_head_coord.x >= self.field_size.1
+            || next_head_coord.x >= self.field_size.rows
             || next_head_coord.y < u64::MIN
-            || next_head_coord.y >= self.field_size.0
+            || next_head_coord.y >= self.field_size.cols
         {
             // snake head touched the boundary
             // game over condition
-            return Err(());
+            return false;
         } else {
             // add a block at head
             self.grow_snake();
             // remove a block at tail
             self.reduce_snake_by_one();
         }
-
-        Ok(())
+        return true;
     }
 }
