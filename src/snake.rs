@@ -18,17 +18,11 @@ impl FieldSize {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[wasm_bindgen]
 pub struct Coord {
     pub x: u64,
     pub y: u64,
-}
-
-impl Display for Coord {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({},{})", &self.x, &self.y)
-    }
 }
 
 #[wasm_bindgen]
