@@ -1,4 +1,4 @@
-mod snake;
+pub mod snake;
 mod utils;
 
 use wasm_bindgen::prelude::*;

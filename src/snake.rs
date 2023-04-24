@@ -2,13 +2,13 @@
 
 use std::fmt::{Display, Formatter};
 
-use wasm_bindgen::{convert::FromWasmAbi, prelude::wasm_bindgen};
+use wasm_bindgen::{convert::FromWasmAbi, prelude::wasm_bindgen, JsObject};
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[wasm_bindgen]
 pub struct FieldSize {
-    rows: u64,
-    cols: u64,
+    pub rows: u64,
+    pub cols: u64,
 }
 
 #[wasm_bindgen]
@@ -21,8 +21,8 @@ impl FieldSize {
 #[derive(Clone)]
 #[wasm_bindgen]
 pub struct Coord {
-    x: u64,
-    y: u64,
+    pub x: u64,
+    pub y: u64,
 }
 
 impl Display for Coord {
@@ -64,7 +64,7 @@ impl Node {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[wasm_bindgen]
 pub enum Direction {
     UP,
@@ -77,10 +77,10 @@ pub enum Direction {
 #[wasm_bindgen]
 pub struct Snake {
     head: SnakeBodyNode,
-    size: u32,
-    direction: Direction,
-    speed: u32,
-    field_size: FieldSize,
+    pub size: u32,
+    pub direction: Direction,
+    pub speed: u32,
+    pub field_size: FieldSize,
 }
 
 #[wasm_bindgen]
@@ -96,6 +96,32 @@ impl Snake {
             speed: 12,
             field_size,
         }
+    }
+
+    pub fn get_movement_data(&self) -> Vec<Coord> {
+        let mut movement_list: Vec<Coord> = Vec::with_capacity(100);
+
+        if *&self.size == 1 {
+            movement_list.push(self.head.clone().unwrap().data)
+        } else {
+            let mut start: &SnakeBodyNode = &self.head;
+            while start.unwrap().next.is_some() {
+                match start {
+                    Some(ref node) => {
+                        // gathering info from data node
+                        movement_list.push(node.clone().data);
+                        // updating start inorder to continue traversal
+                        start = &node.next;
+                    }
+                    None => {}
+                }
+            }
+            // processing tail node
+            // gathering info from data node
+            movement_list.push(start.clone().unwrap().data);
+        }
+
+        movement_list
     }
 
     fn next_head_coord(&self) -> Coord {
